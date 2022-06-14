@@ -3,11 +3,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import MoviesList from './components/MoviesList';
 import AddMovie from './components/AddMovie';
 import './App.css';
+import MovieModel from './components/MovieModel';
 
 function App() {
-	const [movies, setMovies] = useState([]);
+	const [movies, setMovies] = useState(Array<MovieModel>());
 	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState(null);
+	const [error, setError] = useState<string | null>(null);
 
 	const fetchMoviesHandler = useCallback(async () => {
 		setIsLoading(true);
@@ -22,20 +23,20 @@ function App() {
 			}
 
 			const data = await response.json();
-			const loadedMovies = [];
+			const loadedMovies: Array<MovieModel> = [];
 
 			for (const key in data) {
 				loadedMovies.push({
 					id: key,
 					title: data[key].title,
 					openingText: data[key].openingText,
-					releaseText: data[key].releaseDate,
+					releaseDate: data[key].releaseDate,
 				});
 			}
 
 			setMovies(loadedMovies);
 		} catch (error) {
-			setError(error.message);
+			setError(error + '');
 		}
 		setIsLoading(false);
 	}, []);
@@ -44,7 +45,8 @@ function App() {
 		fetchMoviesHandler();
 	}, [fetchMoviesHandler]);
 
-	async function addMovieHandler(movie) {
+	async function addMovieHandler(movie: MovieModel) {
+		console.log(movie);
 		const response = await fetch(
 			'https://react-movie-http-1a272-default-rtdb.firebaseio.com/movies.json',
 			{
